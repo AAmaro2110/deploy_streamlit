@@ -7,7 +7,15 @@ import json
 key_dict = json.loads(st.secrets["textkey"])
 creds = service_account.Credentials.from_service_account_info(key_dict)
 db = firestore.Client(credentials=creds, project="names-project-demo")
-dbNames = db.collection("names")
+
+
+names_ref = list(db.collection(u'names').stream())
+names_dict = list(map(lambda x: x.to_dict(), names_ref))
+names_dataframe = pd.DataFrame(names_dict)
+st.dataframe(names_dataframe)
+
+
+st.dataframe(dbNames)
 st.header("Nuevo registro")
 index = st.text_input("Index")
 name = st.text_input("Name")
@@ -69,8 +77,3 @@ if btnActualizar:
     }
     )
 # ...
-
-names_ref = list(db.collection(u'names').stream())
-names_dict = list(map(lambda x: x.to_dict(), names_ref))
-names_dataframe = pd.DataFrame(names_dict)
-st.dataframe(names_dataframe)
